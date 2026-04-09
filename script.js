@@ -6,7 +6,6 @@ navToggle.addEventListener('click', () => {
     navMenu.classList.toggle('open');
 });
 
-// Close menu when a link is clicked
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', () => {
         navMenu.classList.remove('open');
@@ -24,16 +23,41 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Fade-in on scroll
+// Counter animation for stats
+function animateCounter(el) {
+    const target = parseInt(el.dataset.target, 10);
+    if (isNaN(target)) return;
+    const duration = 1800;
+    const step = 16;
+    const increment = target / (duration / step);
+    let current = 0;
+
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            el.textContent = target;
+            clearInterval(timer);
+        } else {
+            el.textContent = Math.floor(current);
+        }
+    }, step);
+}
+
+// Fade-in on scroll + trigger counter
 const fadeElements = document.querySelectorAll('.fade-in');
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
+
+            // Animate counters inside this element
+            entry.target.querySelectorAll('.stat-number[data-target]').forEach(animateCounter);
+
+            observer.unobserve(entry.target);
         }
     });
-}, { threshold: 0.1 });
+}, { threshold: 0.15 });
 
 fadeElements.forEach(el => observer.observe(el));
 
